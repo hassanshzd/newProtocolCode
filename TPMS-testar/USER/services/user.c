@@ -189,7 +189,7 @@ void tester_stop(void)
 	// output_off(valve_2);
 	champer_state = champer_open;
 	//	output_off(valve_3);//pressure
-	Start_Triggering = 0;
+	Start_Triggering = 0;    //1
 }
 
 void trigger_lf(void)
