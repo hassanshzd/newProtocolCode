@@ -1184,13 +1184,13 @@ Image Symbol Table
     .data                                    0x20000073   Section        1  user.o(.data)
     .bss                                     0x20000074   Section       32  common.o(.bss)
     buf                                      0x20000074   Data          32  common.o(.bss)
-    .bss                                     0x20000094   Section       12  main.o(.bss)
-    g_rxBuffer                               0x20000094   Data          12  main.o(.bss)
-    .bss                                     0x200000a0   Section      200  uart.o(.bss)
-    .bss                                     0x20000168   Section      128  time_server.o(.bss)
-    .bss                                     0x200001e8   Section      384  interrupt_server.o(.bss)
-    .bss                                     0x20000368   Section       14  user.o(.bss)
-    STACK                                    0x20000378   Section     1024  startup_stm32f10x_hd.o(STACK)
+    .bss                                     0x20000094   Section       13  main.o(.bss)
+    g_rxBuffer                               0x20000094   Data          13  main.o(.bss)
+    .bss                                     0x200000a1   Section      200  uart.o(.bss)
+    .bss                                     0x2000016c   Section      128  time_server.o(.bss)
+    .bss                                     0x200001ec   Section      384  interrupt_server.o(.bss)
+    .bss                                     0x2000036c   Section       14  user.o(.bss)
+    STACK                                    0x20000380   Section     1024  startup_stm32f10x_hd.o(STACK)
 
     Global Symbols
 
@@ -1462,12 +1462,12 @@ Image Symbol Table
     sensor2_voltage                          0x20000060   Data           4  user.o(.data)
     Data                                     0x20000064   Data          15  user.o(.data)
     int_flg                                  0x20000073   Data           1  user.o(.data)
-    rx_buff                                  0x200000a0   Data         200  uart.o(.bss)
-    g_delayRunTasks                          0x20000168   Data         128  time_server.o(.bss)
-    g_gpioExtiManager                        0x200001e8   Data         192  interrupt_server.o(.bss)
-    g_gpioExtiManagerBackup                  0x200002a8   Data         192  interrupt_server.o(.bss)
-    serial_rply_pkt                          0x20000368   Data          14  user.o(.bss)
-    __initial_sp                             0x20000778   Data           0  startup_stm32f10x_hd.o(STACK)
+    rx_buff                                  0x200000a1   Data         200  uart.o(.bss)
+    g_delayRunTasks                          0x2000016c   Data         128  time_server.o(.bss)
+    g_gpioExtiManager                        0x200001ec   Data         192  interrupt_server.o(.bss)
+    g_gpioExtiManagerBackup                  0x200002ac   Data         192  interrupt_server.o(.bss)
+    serial_rply_pkt                          0x2000036c   Data          14  user.o(.bss)
+    __initial_sp                             0x20000780   Data           0  startup_stm32f10x_hd.o(STACK)
 
 
 
@@ -1641,7 +1641,7 @@ Memory Map of the image
     0x080026b0   0x080026b0   0x00000020   Data   RO         4168    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080026d0, Size: 0x00000778, Max: 0x00010000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080026d0, Size: 0x00000780, Max: 0x00010000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1654,13 +1654,14 @@ Memory Map of the image
     0x2000004c   0x0800271c   0x00000027   Data   RW         3764    .data               user.o
     0x20000073   0x08002743   0x00000001   Data   RW         3767    .data               user.o
     0x20000074        -       0x00000020   Zero   RW         3118    .bss                common.o
-    0x20000094        -       0x0000000c   Zero   RW         3200    .bss                main.o
-    0x200000a0        -       0x000000c8   Zero   RW         3585    .bss                uart.o
-    0x20000168        -       0x00000080   Zero   RW         3638    .bss                time_server.o
-    0x200001e8        -       0x00000180   Zero   RW         3709    .bss                interrupt_server.o
-    0x20000368        -       0x0000000e   Zero   RW         3762    .bss                user.o
-    0x20000376   0x08002744   0x00000002   PAD
-    0x20000378        -       0x00000400   Zero   RW            1    STACK               startup_stm32f10x_hd.o
+    0x20000094        -       0x0000000d   Zero   RW         3200    .bss                main.o
+    0x200000a1        -       0x000000c8   Zero   RW         3585    .bss                uart.o
+    0x20000169   0x08002744   0x00000003   PAD
+    0x2000016c        -       0x00000080   Zero   RW         3638    .bss                time_server.o
+    0x200001ec        -       0x00000180   Zero   RW         3709    .bss                interrupt_server.o
+    0x2000036c        -       0x0000000e   Zero   RW         3762    .bss                user.o
+    0x2000037a   0x08002744   0x00000006   PAD
+    0x20000380        -       0x00000400   Zero   RW            1    STACK               startup_stm32f10x_hd.o
 
 
 ==============================================================================
@@ -1670,33 +1671,33 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       682          4          0          0          0       9844   cmt2300a.o
-        80          4          0          0          0       2195   cmt2300a_hal.o
-       834         46          0          0          0       5499   cmt_spi3.o
-       330         18          0          0         32       3000   common.o
+       682          4          0          0          0       9884   cmt2300a.o
+        80          4          0          0          0       2207   cmt2300a_hal.o
+       834         46          0          0          0       5507   cmt_spi3.o
+       330         18          0          0         32       3012   common.o
          0          0          0          0          0       4508   core_cm3.o
-         0          0          0          0        384       1943   interrupt_server.o
-       180         18          0          0          0       1556   led.o
-       450         98          0         20         12       4598   main.o
-       144         16          0          0          0     279349   misc.o
-       148          4         96          0          0       2459   radio.o
-        36          8        304          0       1024        940   startup_stm32f10x_hd.o
-       296         10          0          0          0       8993   stm32f10x_adc.o
-       156          0          0          0          0       2196   stm32f10x_gpio.o
-       814        122          0          0          0       9815   stm32f10x_it.o
-       292         40          0         20          0       7088   stm32f10x_rcc.o
-       616        106          0          0          0       7261   stm32f10x_tim.o
-       332          6          0          0          0      13177   stm32f10x_usart.o
-       746         36          0          0          0      18875   system.o
-       300         34          0          0          0       1721   system_stm32f10x.o
-       382          8          0         24        128       4787   time_server.o
-       364         36          0          8        200       5696   uart.o
-       788         68          0         44         14       6916   user.o
+         0          0          0          0        384       1951   interrupt_server.o
+       180         18          0          0          0       1564   led.o
+       450         98          0         20         13       4606   main.o
+       144         16          0          0          0     279357   misc.o
+       148          4         96          0          0       2467   radio.o
+        36          8        304          0       1024        944   startup_stm32f10x_hd.o
+       296         10          0          0          0       9017   stm32f10x_adc.o
+       156          0          0          0          0       2200   stm32f10x_gpio.o
+       814        122          0          0          0       9823   stm32f10x_it.o
+       292         40          0         20          0       7092   stm32f10x_rcc.o
+       616        106          0          0          0       7281   stm32f10x_tim.o
+       332          6          0          0          0      13201   stm32f10x_usart.o
+       746         36          0          0          0      18895   system.o
+       300         34          0          0          0       1725   system_stm32f10x.o
+       382          8          0         24        128       4795   time_server.o
+       364         36          0          8        200       5716   uart.o
+       788         68          0         44         14       6932   user.o
 
     ----------------------------------------------------------------------
-      7978        682        432        116       1796     402416   Object Totals
+      7978        682        432        116       1804     402684   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         8          0          0          0          2          0   (incl. Padding)
+         8          0          0          0          9          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -1753,14 +1754,14 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      9504        698        432        116       1796     397548   Grand Totals
-      9504        698        432        116       1796     397548   ELF Image Totals
+      9504        698        432        116       1804     397816   Grand Totals
+      9504        698        432        116       1804     397816   ELF Image Totals
       9504        698        432        116          0          0   ROM Totals
 
 ==============================================================================
 
     Total RO  Size (Code + RO Data)                 9936 (   9.70kB)
-    Total RW  Size (RW Data + ZI Data)              1912 (   1.87kB)
+    Total RW  Size (RW Data + ZI Data)              1920 (   1.88kB)
     Total ROM Size (Code + RO Data + RW Data)      10052 (   9.82kB)
 
 ==============================================================================
