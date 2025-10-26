@@ -38,7 +38,7 @@
 *********************************************************/
 
 #define RF_RX_TIMEOUT    1000*60*60      //60min
-#define RF_PACKET_SIZE   12               /* Define the payload size here */
+#define RF_PACKET_SIZE   13               /* Define the payload size here */
 #define TEST_DBG	false
 	
 static u8 g_rxBuffer[RF_PACKET_SIZE];   /* RF Rx buffer */
