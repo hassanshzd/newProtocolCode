@@ -85,15 +85,24 @@ void Mcu_Init(void)
 
 u8 Radio_Recv_FixedLen(u8 pBuf[],u8 len)
 {
-#ifdef ENABLE_ANTENNA_SWITCH
-	      if(CMT2300A_ReadGpio3())  /* Read INT2, PKT_DONE */
-#else
-				if(CMT2300A_ReadGpio1()) /* Read INT1, SYNC OK */
-				{
-				  /******/
-				}
+//#ifdef ENABLE_ANTENNA_SWITCH
+//	      if(CMT2300A_ReadGpio3())  /* Read INT2, PKT_DONE */
+//#else
+		if(CMT2300A_ReadGpio1()) /* Read INT1, SYNC OK */
+		{
+		  /******/
+			CMT2300A_GoStby();
+				CMT2300A_ReadFifo(pBuf,len);
+//			 if(*pBuf==0x01)
+//				 SET_GPIO_H(LED1_GPIO);
+				CMT2300A_ClearRxFifo();
+				CMT2300A_ClearInterruptFlags();
+				CMT2300A_GoRx();
+				
+				return 1;
+		}
         if(CMT2300A_ReadGpio2())  /* Read INT2, PKT_DONE */
-#endif	
+//#endif	
 		   {
 //        if(CMT2300A_MASK_PKT_OK_FLG & CMT2300A_ReadReg(CMT2300A_CUS_INT_FLAG))  /* Read PKT_OK flag */
 				 {
