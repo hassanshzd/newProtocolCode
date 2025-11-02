@@ -88,10 +88,10 @@ void handle_cmd(void)
 				tpms_data_rdy = 0;
 				champer_state = champer_close_and_test;
 				// serial_rply_pkt.t_state=0x0f;
-				serial_rply_pkt.id = tpms_pckt->id;
-				serial_rply_pkt.prs_data = tpms_pckt->prs_raw;
-				serial_rply_pkt.temp_data = tpms_pckt->tmp_raw;
-				serial_rply_pkt.tpms_battery = tpms_pckt->bat_raw;
+				serial_rply_pkt.id = tpms_pckt->ID;
+				serial_rply_pkt.prs_data = tpms_pckt->prsur;
+				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
+				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -304,3 +304,19 @@ void read_prs_sensor(void)
 	// presure_voltage=diff_v2-diff_v1;//volt
 	// presure_current= (presure_voltage*1000)/shunt_res_ohm;//ma
 }
+
+u8 crc8_calc(u8* _data, uint8_t len) 
+{
+    uint8_t crc = 0xAA; 
+    for (uint8_t i = 0; i < len; i++) {
+        crc ^= _data[i];
+        for (uint8_t j = 0; j < 8; j++) {
+            if (crc & 0x80)
+                crc = (crc << 1) ^ 0x07;
+            else
+                crc <<= 1;
+        }
+    }
+    return crc;
+}
+

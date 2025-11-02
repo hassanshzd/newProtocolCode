@@ -170,8 +170,8 @@ void RF_Config(void)
                          CMT2300A_GPIO3_SEL_DOUT 	                      
 	                      );
    
-	  CMT2300A_ConfigInterrupt( CMT2300A_INT_SEL_PREAM_OK,  /* GPIO1 > SYNC_OK */
-	                            CMT2300A_INT_SEL_SYNC_OK  /* GPIO2 > PKT_DONE*/
+	  CMT2300A_ConfigInterrupt( CMT2300A_INT_SEL_SYNC_OK,  /* GPIO1 > SYNC_OK */
+	                            CMT2300A_INT_SEL_PKT_DONE  /* GPIO2 > PKT_DONE*/
 	                          );
       
 #endif

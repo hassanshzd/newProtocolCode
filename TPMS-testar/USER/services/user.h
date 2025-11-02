@@ -12,6 +12,10 @@
 #define OF_timer	10//s (timer int every 200 ms)
 #define OF_in_seconds	OF_timer*(1000/200)
 
+//new protocol
+#define new_custumer_id	0x1C
+//
+
 #pragma pack(push)
 #pragma pack(1)
 typedef enum{
@@ -77,9 +81,22 @@ typedef struct
 	u16 crc_16;
 	
 }rfpacket;
+
+typedef struct
+{
+	u8 prdct_id;
+	u32 ID;
+	u8 status;
+	u8 prsur;
+	u8 tempreture;
+	u8 accel;
+	u8 crc;
+}new_rfpacket;
+
 #pragma pack(pop)
 extern Champer_state champer_state;
-extern rfpacket *tpms_pckt;
+//extern rfpacket *tpms_pckt;
+extern new_rfpacket *tpms_pckt;
 extern rx_enum rx_flg;
 extern request_cmnd req_state;
 extern rec_pkt *received_pkt;
@@ -92,5 +109,6 @@ void trigger_lf(void);
 void tester_stop(void);
 u16 ADC1_ReadChannel(u8 channel);
 void read_prs_sensor(void);
+u8 crc8_calc(u8* _data, uint8_t len);
 
 #endif

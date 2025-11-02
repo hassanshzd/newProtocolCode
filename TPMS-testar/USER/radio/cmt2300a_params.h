@@ -206,6 +206,8 @@ const u8 g_cmt2300aDataRateBank[CMT2300A_DATA_RATE_BANK_SIZE] = {
 
 //};
 /* [Baseband Bank] */
+//no preamble
+//sync 2 byte: 0x0001
 const u8 g_cmt2300aBasebandBank[CMT2300A_BASEBAND_BANK_SIZE] = {
     0x02,
     0x08,
