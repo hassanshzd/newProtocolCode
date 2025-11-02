@@ -1184,9 +1184,9 @@ Image Symbol Table
     .data                                    0x20000073   Section        1  user.o(.data)
     .bss                                     0x20000074   Section       32  common.o(.bss)
     buf                                      0x20000074   Data          32  common.o(.bss)
-    .bss                                     0x20000094   Section       12  main.o(.bss)
-    g_rxBuffer                               0x20000094   Data          12  main.o(.bss)
-    .bss                                     0x200000a0   Section      200  uart.o(.bss)
+    .bss                                     0x20000094   Section       10  main.o(.bss)
+    g_rxBuffer                               0x20000094   Data          10  main.o(.bss)
+    .bss                                     0x2000009e   Section      200  uart.o(.bss)
     .bss                                     0x20000168   Section      128  time_server.o(.bss)
     .bss                                     0x200001e8   Section      384  interrupt_server.o(.bss)
     .bss                                     0x20000368   Section       14  user.o(.bss)
@@ -1462,7 +1462,7 @@ Image Symbol Table
     sensor2_voltage                          0x20000060   Data           4  user.o(.data)
     Data                                     0x20000064   Data          15  user.o(.data)
     int_flg                                  0x20000073   Data           1  user.o(.data)
-    rx_buff                                  0x200000a0   Data         200  uart.o(.bss)
+    rx_buff                                  0x2000009e   Data         200  uart.o(.bss)
     g_delayRunTasks                          0x20000168   Data         128  time_server.o(.bss)
     g_gpioExtiManager                        0x200001e8   Data         192  interrupt_server.o(.bss)
     g_gpioExtiManagerBackup                  0x200002a8   Data         192  interrupt_server.o(.bss)
@@ -1654,8 +1654,9 @@ Memory Map of the image
     0x2000004c   0x08002720   0x00000027   Data   RW         3764    .data               user.o
     0x20000073   0x08002747   0x00000001   Data   RW         3767    .data               user.o
     0x20000074        -       0x00000020   Zero   RW         3118    .bss                common.o
-    0x20000094        -       0x0000000c   Zero   RW         3200    .bss                main.o
-    0x200000a0        -       0x000000c8   Zero   RW         3585    .bss                uart.o
+    0x20000094        -       0x0000000a   Zero   RW         3200    .bss                main.o
+    0x2000009e        -       0x000000c8   Zero   RW         3585    .bss                uart.o
+    0x20000166   0x08002748   0x00000002   PAD
     0x20000168        -       0x00000080   Zero   RW         3638    .bss                time_server.o
     0x200001e8        -       0x00000180   Zero   RW         3709    .bss                interrupt_server.o
     0x20000368        -       0x0000000e   Zero   RW         3762    .bss                user.o
@@ -1677,7 +1678,7 @@ Image component sizes
          0          0          0          0          0       4508   core_cm3.o
          0          0          0          0        384       1951   interrupt_server.o
        180         18          0          0          0       1564   led.o
-       454         98          0         20         12       4610   main.o
+       454         98          0         20         10       4610   main.o
        144         16          0          0          0     279357   misc.o
        148          4         96          0          0       2467   radio.o
         36          8        304          0       1024        944   startup_stm32f10x_hd.o
@@ -1696,7 +1697,7 @@ Image component sizes
     ----------------------------------------------------------------------
       7982        682        432        116       1796     402688   Object Totals
          0          0         32          0          0          0   (incl. Generated)
-         8          0          0          0          2          0   (incl. Padding)
+         8          0          0          0          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
