@@ -210,16 +210,16 @@ int main(void) //
 				{
 //					tpms_pckt->tempreture=tpms_pckt->tempreture-1-49;
 //					tpms_pckt->prsur=
-					u32 tpms_id=tpms_pckt->ID;
-					u32 tpms_id_chpk=0;
-					tpms_id_chpk=(tpms_id&0xff)<<24|((tpms_id>>8 &0xff)<<16)|((tpms_id>>16 &0xff)<<8)|((tpms_id>>24 &0xff));//msb  first
-					tpms_pckt->ID=tpms_id_chpk;
+//					u32 tpms_id=tpms_pckt->ID;
+//					u32 tpms_id_chpk=0;
+//					tpms_id_chpk=(tpms_id&0xff)<<24|((tpms_id>>8 &0xff)<<16)|((tpms_id>>16 &0xff)<<8)|((tpms_id>>24 &0xff));//msb  first
+//					tpms_pckt->ID=tpms_id_chpk;
 					tpms_data_rdy=1;
 					
 				}
 			}
-			for(u8 i=0;i<RF_PACKET_SIZE;i++) //Clear Buff
-			g_rxBuffer[i]=0;
+//			for(u8 i=0;i<RF_PACKET_SIZE;i++) //Clear Buff
+//			g_rxBuffer[i]=0;
 				 
 		}
 
