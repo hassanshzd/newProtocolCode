@@ -45,22 +45,22 @@ u16 over_flow_timer = 0;
 // Compatible with existing timer interrupt structure
 // ===============================================================
 
-u8 Data_general[15] = {0x00,0x00,0x00,0x00,0x61,0x5E,0x0F,0x0F,0x13,0xC6,0x6C,0x39,0x00,0x00,0x00};
-u8 Data_sys[15]     = {0xAA,0xAA,0xAA,0xAA,0x61,0x5E,0x7A,0x86,0x13,0xC6,0x6C,0x39,0x00,0x00,0x00};
-u8 Data_custom[15]  = {0xAA,0xAA,0xAA,0xAA,0x12,0x34,0x56,0x78,0x13,0xC6,0x6C,0x39,0x00,0x00,0x00};
+uint8_t Data[12] = {
+    0x00, 0x00, 0x00, 0x00,     // 32-bit preamble (Manchester “0”)
+    0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
+    0x0F, 0x0F,                 // Wake-Up ID
+    0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
+};
 
-u8 *Data = Data_general; // pointer to active frame
-u8 frame_mode = 0;       // 0=general,1=sys,2=custom
-
-u8 Ref = 0x01;
-u8 BYTE_number = 0;
-u8 BIT_number = 0;
-u8 SHIFTER_BYTE = 0x00;
-u8 Time_Interval = 0;
-u8 Start_Triggering = 0;
-u8 Enable_Time_Interval = 0;
-u8 timer_cnt = 0;
-u8 out_state = 0;
+uint8_t Ref = 0x01;
+uint8_t BYTE_number = 0;
+uint8_t BIT_number = 0;
+uint8_t SHIFTER_BYTE = 0x00;
+uint8_t Time_Interval = 0;
+uint8_t Start_Triggering = 0;
+uint8_t timer_cnt = 0;
+uint8_t out_state = 0;
+uint16_t Enable_Time_Interval = 0;
 /*************************************************************************/
 
 void handle_cmd(void)
@@ -344,11 +344,8 @@ u8 crc8_calc(u8* _data, uint8_t len)
 
 //trig lf
 
-
-
 void trigger_lf(void)
 {
-    // generate 125kHz clock by toggling pin every interrupt
     timer_cnt++;
     if ((out_state == 0) && (Start_Triggering == 1))
     {
@@ -361,7 +358,6 @@ void trigger_lf(void)
         out_state = 0;
     }
 
-    // Manchester timing: 32 clock toggles ˜ one bit period (256µs)
     if (timer_cnt >= 32)
     {
         timer_cnt = 0;
@@ -377,27 +373,19 @@ void trigger_lf(void)
                 BIT_number = 0;
                 BYTE_number++;
                 SHIFTER_BYTE = Data[BYTE_number];
-                if (BYTE_number == 15)
+                if (BYTE_number >= sizeof(Data))
                 {
                     Enable_Time_Interval = 1;
                     BYTE_number = 0;
-
-                    // after one frame done -> switch to next ID mode
-                    frame_mode++;
-                    if (frame_mode == 1) Data = Data_sys;
-                    else if (frame_mode == 2) Data = Data_custom;
-                    else { frame_mode = 0; Data = Data_general; }
                 }
             }
 
-            // ASK modulation (Manchester): alternate half bits
             if (Ref == 0x80)
                 SET_GPIO_H(LF_Data_GPIO);
             else
                 SET_GPIO_L(LF_Data_GPIO);
         }
 
-        // time gap between frames (~10ms)
         if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
         {
             Time_Interval++;
