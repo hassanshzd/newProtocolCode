@@ -46,7 +46,7 @@ u16 over_flow_timer = 0;
 // ===============================================================
 
 uint8_t Data[12] = {
-    0x00, 0x00, 0x00, 0x00,     // 32-bit preamble (Manchester “0”)
+    0x00, 0x00, 0x00, 0x00,+     // 32-bit preamble (Manchester “0”)
     0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
     0x0F, 0x0F,                 // Wake-Up ID
     0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)

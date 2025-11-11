@@ -208,7 +208,7 @@ int main(void) //
 			{
 				if(((tpms_pckt->prdct_id>>3)& 0x1F) == new_custumer_id)
 				{
-//					tpms_pckt->tempreture=tpms_pckt->tempreture-1-49;
+   					tpms_pckt->tempreture=tpms_pckt->tempreture-1-49;
 //					tpms_pckt->prsur=
 //					u32 tpms_id=tpms_pckt->ID;
 //					u32 tpms_id_chpk=0;
