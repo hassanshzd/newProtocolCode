@@ -45,8 +45,8 @@ u16 over_flow_timer = 0;
 // Compatible with existing timer interrupt structure
 // ===============================================================
 
-uint8_t Data[12] = {
-    0x00, 0x00, 0x00, 0x00,+     // 32-bit preamble (Manchester “0”)
+uint8_t Data[8] = {
+//    0x00, 0x00, 0x00, 0x00,     // 32-bit preamble (Manchester “0”)
     0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
    // 0x0F, 0x0F,                 // Wake-Up ID
  	// 0x61, 0x5e,                 // Wake-Up ID
@@ -116,8 +116,12 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
+<<<<<<< HEAD
 				//serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
 				serial_rply_pkt.tpms_battery = 178;
+=======
+				serial_rply_pkt.tpms_battery = 200;//(tpms_pckt->status& 0x04)>>2;
+>>>>>>> 14b7119842a16b7a7e06e4cacd7ff02b2b84bbb2
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -349,58 +353,155 @@ u8 crc8_calc(u8* _data, uint8_t len)
 
 //trig lf
 
+//void trigger_lf(void)
+//{
+//    timer_cnt++;
+//    if ((out_state == 0) && (Start_Triggering == 1))
+//    {
+//        SET_GPIO_H(LF_Clk_GPIO);
+//        out_state = 1;
+//    }
+//    else
+//    {
+//        SET_GPIO_L(LF_Clk_GPIO);
+//        out_state = 0;
+//    }
+
+//    if (timer_cnt >= 32)
+//    {
+//        timer_cnt = 0;
+
+//        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
+//        {
+//            Ref = SHIFTER_BYTE & 0x80;
+//            SHIFTER_BYTE <<= 1;
+//            BIT_number++;
+
+//            if (BIT_number == 8)
+//            {
+//                BIT_number = 0;
+//                BYTE_number++;
+//                SHIFTER_BYTE = Data[BYTE_number];
+//                if (BYTE_number >= sizeof(Data))
+//                {
+//                    Enable_Time_Interval = 1;
+//                    BYTE_number = 0;
+//                }
+//            }
+
+//            if (Ref == 0x80)
+//                SET_GPIO_H(LF_Data_GPIO);
+//            else
+//                SET_GPIO_L(LF_Data_GPIO);
+//        }
+
+//        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
+//        {
+//            Time_Interval++;
+//        }
+//        else if (Time_Interval == 39)
+//        {
+//            Enable_Time_Interval = 0;
+//            Time_Interval = 0;
+//            SHIFTER_BYTE = Data[0];
+//        }
+//    }
+//}
+
 void trigger_lf(void)
 {
-    timer_cnt++;
-    if ((out_state == 0) && (Start_Triggering == 1))
+    static uint8_t clk_div = 0;       // Duty 40%
+    static uint16_t tick = 0;         // 
+    static uint8_t halfbit = 0;       // 
+    static uint8_t bitval = 0;        // 
+    static uint8_t byte_idx = 0;
+    static uint8_t bit_idx = 0;
+    static uint8_t SHIFTER_BYTE = 0;
+    static uint8_t preamble_bits = 32; // 
+
+    // ==================================================
+    //  125kHz  Duty  40%
+    // ==================================================
+    if (Start_Triggering)
     {
-        SET_GPIO_H(LF_Clk_GPIO);
-        out_state = 1;
+        clk_div++;
+        // 2 High  3 Low  40%
+        if (clk_div == 1)
+            SET_GPIO_H(LF_Clk_GPIO);
+        else if (clk_div == 3)
+            SET_GPIO_L(LF_Clk_GPIO);
+        else if (clk_div >= 5)
+            clk_div = 0;
     }
     else
     {
         SET_GPIO_L(LF_Clk_GPIO);
-        out_state = 0;
+        SET_GPIO_L(LF_Data_GPIO);
+        return;
     }
 
-    if (timer_cnt >= 32)
+    // ==================================================
+    //  Manchester timing:   ˜128µs  32 int
+    // ==================================================
+    tick++;
+    if (tick < 32) return;
+    tick = 0;
+
+    // ==================================================
+    //  preamble
+    // ==================================================
+    if (preamble_bits > 0)
     {
-        timer_cnt = 0;
+        // Manchester ‘0’ = High ? Low
+        if (halfbit == 0)
+            SET_GPIO_H(LF_Data_GPIO);
+        else
+            SET_GPIO_L(LF_Data_GPIO);
 
-        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
+        halfbit ^= 1;
+        if (halfbit == 0)
+            preamble_bits--;  // 
+        return;
+    }
+
+    // ==================================================
+    //  (Sync + WakeUp + Payload)
+    // ==================================================
+    if (halfbit == 0)
+    {
+        //  Data
+        SHIFTER_BYTE = Data[byte_idx];
+        bitval = (SHIFTER_BYTE >> (7 - bit_idx)) & 1;
+
+        // (Manchester)
+        if (bitval == 0)
+            SET_GPIO_H(LF_Data_GPIO);   // '0'  High/Low
+        else
+            SET_GPIO_L(LF_Data_GPIO);   // '1'  Low/High
+    }
+    else
+    {
+        // 
+        if (bitval == 0)
+            SET_GPIO_L(LF_Data_GPIO);
+        else
+            SET_GPIO_H(LF_Data_GPIO);
+
+        // 
+        bit_idx++;
+        if (bit_idx >= 8)
         {
-            Ref = SHIFTER_BYTE & 0x80;
-            SHIFTER_BYTE <<= 1;
-            BIT_number++;
-
-            if (BIT_number == 8)
+            bit_idx = 0;
+            byte_idx++;
+            if (byte_idx >= sizeof(Data))
             {
-                BIT_number = 0;
-                BYTE_number++;
-                SHIFTER_BYTE = Data[BYTE_number];
-                if (BYTE_number >= sizeof(Data))
-                {
-                    Enable_Time_Interval = 1;
-                    BYTE_number = 0;
-                }
+                byte_idx = 0;
+                preamble_bits = 32;  // 
             }
-
-            if (Ref == 0x80)
-                SET_GPIO_H(LF_Data_GPIO);
-            else
-                SET_GPIO_L(LF_Data_GPIO);
-        }
-
-        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
-        {
-            Time_Interval++;
-        }
-        else if (Time_Interval == 39)
-        {
-            Enable_Time_Interval = 0;
-            Time_Interval = 0;
-            SHIFTER_BYTE = Data[0];
         }
     }
+
+    halfbit ^= 1;
 }
+
 
