@@ -181,10 +181,10 @@ int main(void) //
 	  CMT2300A_GoStby();
 	
 	/* Must clear FIFO after enable SPI to read or write the FIFO */
-    CMT2300A_EnableReadFifo();
+  CMT2300A_EnableReadFifo();
 	CMT2300A_ClearInterruptFlags();
 	CMT2300A_ClearRxFifo();
-  	CMT2300A_GoRx();
+  CMT2300A_GoRx();
 	
 	while(1)
 	{
@@ -215,7 +215,7 @@ int main(void) //
 //					tpms_id_chpk=(tpms_id&0xff)<<24|((tpms_id>>8 &0xff)<<16)|((tpms_id>>16 &0xff)<<8)|((tpms_id>>24 &0xff));//msb  first
 //					tpms_pckt->ID=tpms_id_chpk;
 					tpms_data_rdy=1;
-					
+                                              					
 				}
 			}
 //			for(u8 i=0;i<RF_PACKET_SIZE;i++) //Clear Buff
