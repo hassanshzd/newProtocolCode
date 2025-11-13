@@ -48,8 +48,11 @@ u16 over_flow_timer = 0;
 uint8_t Data[12] = {
     0x00, 0x00, 0x00, 0x00,+     // 32-bit preamble (Manchester “0”)
     0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
-    0x0F, 0x0F,                 // Wake-Up ID
-    0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
+   // 0x0F, 0x0F,                 // Wake-Up ID
+ 	// 0x61, 0x5e,                 // Wake-Up ID
+	0x7a, 0x86,                 // Wake-Up ID
+    0x13, 0xC6, 0x6C
+	, 0x39      // LF Data (MLF1)
 };
 
 uint8_t Ref = 0x01;
@@ -113,7 +116,16 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
+<<<<<<< HEAD
 				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+=======
+<<<<<<< HEAD
+				//serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+				serial_rply_pkt.tpms_battery = 178;
+=======
+				serial_rply_pkt.tpms_battery = 200;//(tpms_pckt->status& 0x04)>>2;
+>>>>>>> 14b7119842a16b7a7e06e4cacd7ff02b2b84bbb2
+>>>>>>> parent of 4513e14 (trigger function edited)
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -134,6 +146,7 @@ void handle_cmd(void)
 	}
 	break;
 	case (stop_test):
+		
 	{
 		tester_stop();
 		req_state = idl;
