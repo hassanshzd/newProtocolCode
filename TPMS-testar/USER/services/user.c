@@ -28,28 +28,31 @@ u8 int_flg;
 u16 frame_cnt = 0;
 u16 over_flow_timer = 0;
 // Variables which are used for simulating LF driver data
-//u8 Data[15] = {0xAA, 0xAA, 0xAA, 0xAA, 0xE2, 0xCC, 0xA6, 0x59, 0xA6, 0x59, 0xAA, 0x5A, 0x65, 0x65, 0x40};
-//u8 Ref = 0x01;
-//u8 BYTE_number = 0;
-//u8 BIT_number = 0;
-//u8 SHIFTER_BYTE = 0x40;
-//u8 Time_Interval = 0;
-//u8 Start_Triggering = 0;
-//u8 timer_cnt = 0;
-//u8 out_state = 0;
+u8 Data[24] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA, 0xAA, 0xAA, 0xAA, 0xE2, 0xCC, 0xA5, 0xAA, 0x66, 0x55, 0xAA, 0x69, 0x56, 0xA5, 0xA5,0x96,0xA9,0x5A,0x40};
+u8 Ref = 0x01;
+u8 BYTE_number = 0;
+u8 BIT_number = 0;
+u8 SHIFTER_BYTE = 0x40;
+u8 Time_Interval = 0;
+u8 Start_Triggering = 0;
+u8 timer_cnt = 0;
+u8 out_state = 0;
 
-//u16 Enable_Time_Interval = 0;
+u16 Enable_Time_Interval = 0;
 
 // ===============================================================
 // LF Trigger function (multi-ID Manchester encoder, ASK via GPIO)
 // Compatible with existing timer interrupt structure
 // ===============================================================
-
+/*
 uint8_t Data[12] = {
-    0x00, 0x00, 0x00, 0x00,     // 32-bit preamble (Manchester ?0?)
-    0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
-    0x0F, 0x0F,                 // Wake-Up ID
-    0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
+      0x00, 0x00, 0x00, 0x00,    // 32-bit preamble (Manchester “0”)
+    	//0xAA, 0xAA, 0xAA, 0xAA,0xAA,    // 32-bit preamble (Manchester “0”)
+      0x6c, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
+	   // 0xE2,                          // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
+	   // 0xCC ,0XA5,                   // Wake-Up ID
+       0x0F, 0x0F,                 // Wake-Up ID  
+      0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
 };
 
 uint8_t Ref = 0x01;
@@ -61,6 +64,7 @@ uint8_t Start_Triggering = 0;
 uint8_t timer_cnt = 0;
 uint8_t out_state = 0;
 uint16_t Enable_Time_Interval = 0;
+*/
 /*************************************************************************/
 
 void handle_cmd(void)
@@ -113,7 +117,7 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
-				serial_rply_pkt.tpms_battery = 200;//(tpms_pckt->status& 0x04)>>2;
+				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -214,7 +218,7 @@ void tester_stop(void)
 	Start_Triggering = 0;    //1
 }
 
-/*void trigger_lf(void)
+void trigger_lf(void)
 {
 	timer_cnt++;
 	if ((out_state == 0) && (Start_Triggering == 1))
@@ -244,7 +248,7 @@ void tester_stop(void)
 				BIT_number = 0;
 				BYTE_number++;
 				SHIFTER_BYTE = Data[BYTE_number];
-				if (BYTE_number == 15)
+				if (BYTE_number == 24)                      
 				{
 					Enable_Time_Interval = 1;
 					BYTE_number = 0;
@@ -279,7 +283,7 @@ void tester_stop(void)
 			SHIFTER_BYTE = Data[0];
 		}
 	}
-}*/
+}
 
 u16 ADC1_ReadChannel(u8 channel)
 {
@@ -344,155 +348,59 @@ u8 crc8_calc(u8* _data, uint8_t len)
 
 //trig lf
 
-//void trigger_lf(void)
-//{
-//    timer_cnt++;
-//    if ((out_state == 0) && (Start_Triggering == 1))
-//    {
-//        SET_GPIO_H(LF_Clk_GPIO);
-//        out_state = 1;
-//    }
-//    else
-//    {
-//        SET_GPIO_L(LF_Clk_GPIO);
-//        out_state = 0;
-//    }
-
-//    if (timer_cnt >= 32)
-//    {
-//        timer_cnt = 0;
-
-//        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
-//        {
-//            Ref = SHIFTER_BYTE & 0x80;
-//            SHIFTER_BYTE <<= 1;
-//            BIT_number++;
-
-//            if (BIT_number == 8)
-//            {
-//                BIT_number = 0;
-//                BYTE_number++;
-//                SHIFTER_BYTE = Data[BYTE_number];
-//                if (BYTE_number >= sizeof(Data))
-//                {
-//                    Enable_Time_Interval = 1;
-//                    BYTE_number = 0;
-//                }
-//            }
-
-//            if (Ref == 0x80)
-//                SET_GPIO_H(LF_Data_GPIO);
-//            else
-//                SET_GPIO_L(LF_Data_GPIO);
-//        }
-
-//        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
-//        {
-//            Time_Interval++;
-//        }
-//        else if (Time_Interval == 39)
-//        {
-//            Enable_Time_Interval = 0;
-//            Time_Interval = 0;
-//            SHIFTER_BYTE = Data[0];
-//        }
-//    }
-//}
-
-void trigger_lf(void)
+/*void trigger_lf(void)
 {
-    static uint8_t clk_div = 0;       // Duty 40%
-    static uint16_t tick = 0;         // 
-    static uint8_t halfbit = 0;       // 
-    static uint8_t bitval = 0;        // 
-    static uint8_t byte_idx = 0;
-    static uint8_t bit_idx = 0;
-    static uint8_t SHIFTER_BYTE = 0;
-    static uint8_t preamble_bits = 32; // 
-
-    // ==================================================
-    //  125kHz  Duty  40%
-    // ==================================================
-    if (Start_Triggering)
+    timer_cnt++;
+    if ((out_state == 0) && (Start_Triggering == 1))
     {
-        clk_div++;
-        // 2 High  3 Low  40%
-        if (clk_div == 1)
-            SET_GPIO_H(LF_Clk_GPIO);
-        else if (clk_div == 3)
-            SET_GPIO_L(LF_Clk_GPIO);
-        else if (clk_div >= 5)
-            clk_div = 0;
+        SET_GPIO_H(LF_Clk_GPIO);
+        out_state = 1;
     }
     else
     {
         SET_GPIO_L(LF_Clk_GPIO);
-        SET_GPIO_L(LF_Data_GPIO);
-        return;
+        out_state = 0;
     }
 
-    // ==================================================
-    //  Manchester timing:   ?128?s  32 int
-    // ==================================================
-    tick++;
-    if (tick < 32) return;
-    tick = 0;
-
-    // ==================================================
-    //  preamble
-    // ==================================================
-    if (preamble_bits > 0)
+    if (timer_cnt >= 32)
     {
-        // Manchester ?0? = High ? Low
-        if (halfbit == 0)
-            SET_GPIO_H(LF_Data_GPIO);
-        else
-            SET_GPIO_L(LF_Data_GPIO);
+        timer_cnt = 0;
 
-        halfbit ^= 1;
-        if (halfbit == 0)
-            preamble_bits--;  // 
-        return;
-    }
-
-    // ==================================================
-    //  (Sync + WakeUp + Payload)
-    // ==================================================
-    if (halfbit == 0)
-    {
-        //  Data
-        SHIFTER_BYTE = Data[byte_idx];
-        bitval = (SHIFTER_BYTE >> (7 - bit_idx)) & 1;
-
-        // (Manchester)
-        if (bitval == 0)
-            SET_GPIO_H(LF_Data_GPIO);   // '0'  High/Low
-        else
-            SET_GPIO_L(LF_Data_GPIO);   // '1'  Low/High
-    }
-    else
-    {
-        // 
-        if (bitval == 0)
-            SET_GPIO_L(LF_Data_GPIO);
-        else
-            SET_GPIO_H(LF_Data_GPIO);
-
-        // 
-        bit_idx++;
-        if (bit_idx >= 8)
+        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
         {
-            bit_idx = 0;
-            byte_idx++;
-            if (byte_idx >= sizeof(Data))
+            Ref = SHIFTER_BYTE & 0x80;
+            SHIFTER_BYTE <<= 1;
+            BIT_number++;
+
+            if (BIT_number == 8)
             {
-                byte_idx = 0;
-                preamble_bits = 32;  // 
+                BIT_number = 0;
+                BYTE_number++;
+                SHIFTER_BYTE = Data[BYTE_number];
+                if (BYTE_number >= sizeof(Data))
+                {
+                    Enable_Time_Interval = 1;
+                    BYTE_number = 0;
+                }
             }
+
+            if (Ref == 0x80)
+                SET_GPIO_H(LF_Data_GPIO);
+            else
+                SET_GPIO_L(LF_Data_GPIO);
+        }
+
+        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
+        {
+            Time_Interval++;
+        }
+        else if (Time_Interval == 39)
+        {
+            Enable_Time_Interval = 0;
+            Time_Interval = 0;
+            SHIFTER_BYTE = Data[0];
         }
     }
-
-    halfbit ^= 1;
 }
 
-
+*/
