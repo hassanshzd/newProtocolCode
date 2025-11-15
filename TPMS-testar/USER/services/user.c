@@ -45,24 +45,12 @@ u8 out_state = 0;
 // Compatible with existing timer interrupt structure
 // ===============================================================
 
-<<<<<<< Updated upstream
-uint8_t Data[12] = {
-    0x00, 0x00, 0x00, 0x00,+     // 32-bit preamble (Manchester “0”)
-    0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
-   // 0x0F, 0x0F,                 // Wake-Up ID
- 	// 0x61, 0x5e,                 // Wake-Up ID
-	0x7a, 0x86,                 // Wake-Up ID
-    0x13, 0xC6, 0x6C
-	, 0x39      // LF Data (MLF1)
-};
-=======
 //uint8_t Data[12] = {
 //      0x00, 0x00, 0x00, 0x00,    // 32-bit preamble (Manchester “0”)
 //      0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
 //      0x0F, 0x0F,                 // Wake-Up ID  
 //      0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
 //};
->>>>>>> Stashed changes
 
 //uint8_t Ref = 0x01;
 //uint8_t BYTE_number = 0;
@@ -168,20 +156,7 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
-<<<<<<< Updated upstream
-<<<<<<< HEAD
 				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
-=======
-<<<<<<< HEAD
-				//serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
-				serial_rply_pkt.tpms_battery = 178;
-=======
-				serial_rply_pkt.tpms_battery = 200;//(tpms_pckt->status& 0x04)>>2;
->>>>>>> 14b7119842a16b7a7e06e4cacd7ff02b2b84bbb2
->>>>>>> parent of 4513e14 (trigger function edited)
-=======
-				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
->>>>>>> Stashed changes
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -202,7 +177,6 @@ void handle_cmd(void)
 	}
 	break;
 	case (stop_test):
-		
 	{
 		tester_stop();
 		req_state = idl;
@@ -414,11 +388,6 @@ u8 crc8_calc(u8* _data, uint8_t len)
 
 //trig lf
 
-<<<<<<< Updated upstream
-void trigger_lf(void)
-{
-    timer_cnt++;
-=======
 //void trigger_lf(void)
 //{
 //    timer_cnt++;
@@ -485,7 +454,6 @@ void trigger_lf(void)
     if(!Start_Triggering) return;
 
     // Toggle ???? ASK
->>>>>>> Stashed changes
     if ((out_state == 0) && (Start_Triggering == 1))
     {
         SET_GPIO_H(LF_Clk_GPIO);
@@ -497,47 +465,6 @@ void trigger_lf(void)
         out_state = 0;
     }
 
-<<<<<<< Updated upstream
-    if (timer_cnt >= 32)
-    {
-        timer_cnt = 0;
-
-        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
-        {
-            Ref = SHIFTER_BYTE & 0x80;
-            SHIFTER_BYTE <<= 1;
-            BIT_number++;
-
-            if (BIT_number == 8)
-            {
-                BIT_number = 0;
-                BYTE_number++;
-                SHIFTER_BYTE = Data[BYTE_number];
-                if (BYTE_number >= sizeof(Data))
-                {
-                    Enable_Time_Interval = 1;
-                    BYTE_number = 0;
-                }
-            }
-
-            if (Ref == 0x80)
-                SET_GPIO_H(LF_Data_GPIO);
-            else
-                SET_GPIO_L(LF_Data_GPIO);
-        }
-
-        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
-        {
-            Time_Interval++;
-        }
-        else if (Time_Interval == 39)
-        {
-            Enable_Time_Interval = 0;
-            Time_Interval = 0;
-            SHIFTER_BYTE = Data[0];
-        }
-    }
-=======
     timer_cnt++;
 
     // ??? ??? 128us
@@ -652,6 +579,6 @@ void trigger_lf(void)
             current_data = payload[cur_byte];
         }
     }
->>>>>>> Stashed changes
 }
+
 
