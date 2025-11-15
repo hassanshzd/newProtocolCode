@@ -36,7 +36,7 @@ u16 over_flow_timer = 0;
 //u8 Time_Interval = 0;
 //u8 Start_Triggering = 0;
 //u8 timer_cnt = 0;
-//u8 out_state = 0;
+u8 out_state = 0;
 
 //u16 Enable_Time_Interval = 0;
 
@@ -45,6 +45,7 @@ u16 over_flow_timer = 0;
 // Compatible with existing timer interrupt structure
 // ===============================================================
 
+<<<<<<< Updated upstream
 uint8_t Data[12] = {
     0x00, 0x00, 0x00, 0x00,+     // 32-bit preamble (Manchester “0”)
     0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
@@ -54,16 +55,66 @@ uint8_t Data[12] = {
     0x13, 0xC6, 0x6C
 	, 0x39      // LF Data (MLF1)
 };
+=======
+//uint8_t Data[12] = {
+//      0x00, 0x00, 0x00, 0x00,    // 32-bit preamble (Manchester “0”)
+//      0xE5, 0x99,                 // 9-bit synchronization pattern (approximation of 3+1+2+2+1)
+//      0x0F, 0x0F,                 // Wake-Up ID  
+//      0x13, 0xC6, 0x6C, 0x39      // LF Data (MLF1)
+//};
+>>>>>>> Stashed changes
 
-uint8_t Ref = 0x01;
-uint8_t BYTE_number = 0;
-uint8_t BIT_number = 0;
-uint8_t SHIFTER_BYTE = 0x00;
-uint8_t Time_Interval = 0;
+//uint8_t Ref = 0x01;
+//uint8_t BYTE_number = 0;
+//uint8_t BIT_number = 0;
+//uint8_t SHIFTER_BYTE = 0x00;
+//uint8_t Time_Interval = 0;
 uint8_t Start_Triggering = 0;
-uint8_t timer_cnt = 0;
-uint8_t out_state = 0;
-uint16_t Enable_Time_Interval = 0;
+//uint8_t timer_cnt = 0;
+//uint8_t out_state = 0;
+//uint16_t Enable_Time_Interval = 0;
+
+// ============================
+// Manchester 256us per bit
+// ============================
+
+#define HALF_TICKS   32     // 128us = 32 * 4us
+#define FULL_TICKS   64
+#define SYNC_BITS    9
+
+// ----------------------------
+// ???? ??
+// ----------------------------
+uint8_t preamble[4] = {0x00,0x00,0x00,0x00};      // 32 ??? ???
+uint8_t sync_b1     = 0xE5;                       // 8 ??? ??? ????
+uint8_t sync_b2     = 0x80;                       // ??? ??? MSB ???? = ??? ???
+uint8_t wakeup[2]   = {0x0F,0x0F};
+uint8_t payload[4]  = {0x13,0xC6,0x6C,0x39};
+
+// ----------------------------
+// ???????? ????
+// ----------------------------
+uint8_t cur_byte      = 0;
+uint8_t cur_bit       = 0;
+uint8_t half_phase    = 0;
+uint8_t section       = 0;   // 0=preamble,1=sync,2=wakeup,3=payload
+uint16_t timer_cnt    = 0;
+
+uint8_t current_data;        // ????? ?? ???? ????? ?????????
+
+
+// ----------------------------
+// ???? ?????????? ???? ?????
+// ----------------------------
+void start_LF(void)
+{
+    section = 0;
+    cur_byte = 0;
+    cur_bit  = 0;
+    half_phase = 0;
+    timer_cnt = 0;
+    current_data = preamble[0];
+}
 /*************************************************************************/
 
 void handle_cmd(void)
@@ -107,6 +158,7 @@ void handle_cmd(void)
 		{
 			output_on(valve_4);
 			//	req_state=start_test;
+			start_LF();
 			Start_Triggering = 1;
 			if (tpms_data_rdy)
 			{
@@ -116,6 +168,7 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
 =======
@@ -126,6 +179,9 @@ void handle_cmd(void)
 				serial_rply_pkt.tpms_battery = 200;//(tpms_pckt->status& 0x04)>>2;
 >>>>>>> 14b7119842a16b7a7e06e4cacd7ff02b2b84bbb2
 >>>>>>> parent of 4513e14 (trigger function edited)
+=======
+				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+>>>>>>> Stashed changes
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
@@ -209,6 +265,7 @@ void tester_init(void) // tester rutine
 		{
 			output_on(valve_3);
 			champer_state = champer_close;
+			start_LF();
 			Start_Triggering = 1;
 			req_state = start_test;
 		}
@@ -357,9 +414,78 @@ u8 crc8_calc(u8* _data, uint8_t len)
 
 //trig lf
 
+<<<<<<< Updated upstream
 void trigger_lf(void)
 {
     timer_cnt++;
+=======
+//void trigger_lf(void)
+//{
+//    timer_cnt++;
+//    if ((out_state == 0) && (Start_Triggering == 1))
+//    {
+//        SET_GPIO_H(LF_Clk_GPIO);
+//        out_state = 1;
+//    }
+//    else
+//    {
+//        SET_GPIO_L(LF_Clk_GPIO);
+//        out_state = 0;
+//    }
+
+//    if (timer_cnt >= 32)
+//    {
+//        timer_cnt = 0;
+
+//        if ((Enable_Time_Interval == 0) && (Start_Triggering == 1))
+//        {
+//            Ref = SHIFTER_BYTE & 0x80;
+//            SHIFTER_BYTE <<= 1;
+//            BIT_number++;
+
+//            if (BIT_number == 8)
+//            {
+//                BIT_number = 0;
+//                BYTE_number++;
+//                SHIFTER_BYTE = Data[BYTE_number];
+//                if (BYTE_number >= sizeof(Data))
+//                {
+//                    Enable_Time_Interval = 1;
+//                    BYTE_number = 0;
+//                }
+//            }
+
+//            if (Ref == 0x80)
+//                SET_GPIO_H(LF_Data_GPIO);
+//            else
+//                SET_GPIO_L(LF_Data_GPIO);
+//        }
+
+//        if ((Enable_Time_Interval == 1) && (Time_Interval < 39))
+//        {
+//            Time_Interval++;
+//        }
+//        else if (Time_Interval == 39)
+//        {
+//            Enable_Time_Interval = 0;
+//            Time_Interval = 0;
+//            SHIFTER_BYTE = Data[0];
+//        }
+//    }
+//}
+
+
+
+// ----------------------------
+// ???? ????? ?????? – ?? 4us
+// ----------------------------
+void trigger_lf(void)
+{
+    // ??? ???? ????? ???? ???
+    if(!Start_Triggering) return;
+
+    // Toggle ???? ASK
+>>>>>>> Stashed changes
     if ((out_state == 0) && (Start_Triggering == 1))
     {
         SET_GPIO_H(LF_Clk_GPIO);
@@ -371,6 +497,7 @@ void trigger_lf(void)
         out_state = 0;
     }
 
+<<<<<<< Updated upstream
     if (timer_cnt >= 32)
     {
         timer_cnt = 0;
@@ -410,5 +537,121 @@ void trigger_lf(void)
             SHIFTER_BYTE = Data[0];
         }
     }
+=======
+    timer_cnt++;
+
+    // ??? ??? 128us
+    if(timer_cnt < HALF_TICKS)
+        return;
+
+    timer_cnt = 0;
+
+    // ----------------------------
+    // ??? ???/??? ??????
+    // ----------------------------
+    uint8_t bit_val = (current_data & 0x80) ? 1 : 0;
+
+    if(half_phase == 0)
+    {
+        // ??? ??? ??? = ????? ???
+        if(bit_val)
+            SET_GPIO_H(LF_Data_GPIO);
+        else
+            SET_GPIO_L(LF_Data_GPIO);
+
+        half_phase = 1;
+        return;
+    }
+    else
+    {
+        // ??? ??? ??? = ?????
+        if(bit_val)
+            SET_GPIO_L(LF_Data_GPIO);
+        else
+            SET_GPIO_H(LF_Data_GPIO);
+
+        half_phase = 0;  // ????? ??? ????
+    }
+
+    // ----------------------------
+    // ???? ?? ??? ????
+    // ----------------------------
+    current_data <<= 1;
+    cur_bit++;
+
+    // ----------------------------
+    // ????? ? ????
+    // ----------------------------
+    if(section == 1)   // ??? ????
+    {
+        if(cur_byte == 0)
+        {
+            // ???? ??? ???? = 8 ??? ????
+            if(cur_bit >= 8)
+            {
+                cur_bit = 0;
+                cur_byte = 1;
+                current_data = sync_b2;     // ??? ??? MSB ??? ???
+            }
+        }
+        else
+        {
+            // ???? ??? ???? = ??? ? ???!
+            if(cur_bit >= 1)
+            {
+                // ???? ???? ??
+                section = 2;   // ??? wakeup
+                cur_byte = 0;
+                cur_bit = 0;
+                current_data = wakeup[0];
+            }
+        }
+        return;
+    }
+
+    // ----------------------------
+    // ???? ?????? (8 ??? ????)
+    // ----------------------------
+    if(cur_bit >= 8)
+    {
+        cur_bit = 0;
+        cur_byte++;
+
+        if(section == 0)  // ???????
+        {
+            if(cur_byte >= 4)
+            {
+                section = 1;  // ????
+                cur_byte = 0;
+                current_data = sync_b1;
+                return;
+            }
+            current_data = preamble[cur_byte];
+        }
+
+        else if(section == 2)  // Wake-up
+        {
+            if(cur_byte >= 2)
+            {
+                section = 3;  // Payload
+                cur_byte = 0;
+                current_data = payload[0];
+                return;
+            }
+            current_data = wakeup[cur_byte];
+        }
+
+        else if(section == 3) // Payload
+        {
+            if(cur_byte >= 4)
+            {
+                // ???? ??
+                Start_Triggering = 0;
+                return;
+            }
+            current_data = payload[cur_byte];
+        }
+    }
+>>>>>>> Stashed changes
 }
 
