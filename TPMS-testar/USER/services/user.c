@@ -117,7 +117,8 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
-				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+				//serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+				serial_rply_pkt.tpms_battery = (tpms_pckt->status)*178;
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else
