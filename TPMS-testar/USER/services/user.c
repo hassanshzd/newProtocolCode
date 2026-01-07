@@ -24,8 +24,9 @@ rec_pkt *received_pkt = 0;
 request_cmnd req_state = not_cnct;
 Champer_state champer_state;
 
+
 u8 int_flg;
-u16 frame_cnt = 0;
+u32 frame_cnt = 0;
 u16 over_flow_timer = 0;
 // Variables which are used for simulating LF driver data
 u8 Data[24] = {0xAA,0xAA,0xAA,0xAA,0xAA,0xAA, 0xAA, 0xAA, 0xAA, 0xE2, 0xCC, 0xA5, 0xAA, 0x66, 0x55, 0xAA, 0x69, 0x56, 0xA5, 0xA5,0x96,0xA9,0x5A,0x40}; //LF DATA
@@ -117,8 +118,8 @@ void handle_cmd(void)
 				serial_rply_pkt.id = tpms_pckt->ID;
 				serial_rply_pkt.prs_data = tpms_pckt->prsur;
 				serial_rply_pkt.temp_data = tpms_pckt->tempreture;
-				//serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
-				serial_rply_pkt.tpms_battery = (tpms_pckt->status)*178;
+				serial_rply_pkt.tpms_battery = (tpms_pckt->status& 0x04)>>2;
+				//serial_rply_pkt.tpms_battery = 178;
 				serial_rply_pkt.cnt = ++frame_cnt;
 			}
 			else

@@ -6,7 +6,7 @@
 #define rx_header	0xAA
 #define rx_footer	0x55
 #define rec_pkt_len	5
-#define disconnect_data 0xf3
+#define disconnect_data 0xf4
 #define idle_data	0xfc
 #define champer_delay	3*1000 //ms
 #define OF_timer	10//s (timer int every 200 ms)
@@ -28,7 +28,7 @@ typedef enum
 	idl=0,
 	start_test=1,
 	stop_test=2,
-	not_cnct=0xf3,
+	not_cnct=0xf4,
 	idl_sync_test=0xfc
 }request_cmnd;
 typedef enum{
